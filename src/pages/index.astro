@@ -24,7 +24,7 @@ const data: {
          'Página estática',
          'Diseño ajustado a todos los dispositivos',
          'Contiene la información del contacto',
-         'Diseño y cambios a petición del cliente antes de la fecha de entrega',
+         'Diseño ajustado a los requerimientos del cliente',
          'Sin cambios después de que la página esté en funcionamiento',
       ],
       price: 600,
@@ -32,12 +32,11 @@ const data: {
    {
       images: [P02],
       cover: P02,
-      title: 'Sección con productos',
+      title: 'Anaquel de productos',
       features: [
-         'Incluye la Página de presentación',
+         'Incluye "Página de presentación"',
          'Inicio de sesión para usuarios',
-         'Agregar productos sin la ayuda de los desarrolladores',
-         'Agregar cualquier cantidad de productos',
+         'Agregar cualquier cantidad de productos sin la ayuda de los desarrolladores',
          'Asignar precios, nombres de productos, imágenes de referencias y características',
          'Sección de productos con precios en la página de usuarios',
          'Formulario de contacto',
@@ -49,14 +48,14 @@ const data: {
       cover: P03,
       title: 'Compra de productos',
       features: [
-         'Incluye la Sección con productos',
-         'Agregar pasarela de pago en línea',
-         'Pagos con tarjetas Mastercard, visa y American expréss',
-         'Asignar stock disponible',
-         'Sección de ordenes',
+         'Incluye "Página de presentación"',
+         'Incluye "Anaquel de productos"',
+         'Historial de órdenes',
+         'Asignar cantidad disponible de productos',
          'Carrito de compras',
-         'Seguimiento de orden para cliente',
-         'Etapas de despacho de productos',
+         'Pasarela de pago en línea incluyendo tarjetas MasterCard, VISA y American Express',
+         'Seguimiento de compra para cliente',
+         'Etapas para el despacho de productos',
       ],
       price: 5900,
    },
@@ -88,7 +87,7 @@ const data: {
    </head>
    <body class="flex flex-col items-start justify-start w-full min-h-dvh">
       <Header />
-      <main class="w-full flex-auto bg-main grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 p-10">
+      <main class="w-full flex-auto bg-main grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4 sm:gap-6 sm:p-6 lg:gap-10 lg:p-10">
          {data.map(({ cover, features, images, price, title }) => (
             <Card
                cover={cover}

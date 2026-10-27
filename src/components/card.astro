@@ -20,15 +20,23 @@ const { images, cover, title, features, price } = Astro.props;
    <Image
       src={cover}
       alt={title}
-      class="aspect-4/3 w-full rounded-lg object-cover"
+      class="aspect-4/3 w-full rounded-lg object-cover shadow-md"
    />
-   <h2 class="text-xl font-bold text-custom-black">{title}</h2>
-   <ul class="flex list-inside list-disc flex-col gap-0.5">
+   <h2 class="text-xl sm:text-2xl transition-all font-bold text-custom-black">{title}</h2>
+   <div class="w-full flex flex-col">
+      {features.map((feature) => (
+         <div class="flex flex-row items-start justify-start">
+            <div class="flex items-start justify-start text-base sm:text-sm transition-all p-0.5 w-fit">•</div>
+            <div class="text-base sm:text-sm transition-all p-0.5 flex-auto text-left">{feature}</div>
+         </div>
+      ))}
+   </div>
+   <!-- <ul class="flex list-inside list-disc flex-col gap-0.5">
       {features.map((feature) => (
          <li class="text-sm">{feature}</li>
       ))}
-   </ul>
-   <div class="mt-auto w-full flex [&_span]:ml-auto [&_span]:text-3xl [&_span]:italic [&_span]:text-main [&_span]:font-semibold">
+   </ul> -->
+   <div class="mt-auto w-full flex [&_span]:ml-auto [&_span]:text-2xl [&_span]:sm:text-3xl [&_span]:italic [&_span]:text-main [&_span]:font-semibold [&_span]:transition-all">
       <Price value={price} />
    </div>
 </article>
