@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+@theme {
+   --color-main: #f5560f;
+   --color-main-dark: #ba3202;
+   --color-custom-black: #021827;
+   --color-contrast: #4dcaff;
+}
+
+* {
+   font-family: var(--custom-font-roboto), sans-serif;
+}
