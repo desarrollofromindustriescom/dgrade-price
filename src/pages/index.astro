@@ -88,7 +88,7 @@ const data: {
    </head>
    <body class="flex flex-col items-start justify-start w-full min-h-dvh">
       <Header />
-      <main class="w-full flex-auto bg-main grid grid-cols-3 gap-10 p-10">
+      <main class="w-full flex-auto bg-main grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 p-10">
          {data.map(({ cover, features, images, price, title }) => (
             <Card
                cover={cover}
