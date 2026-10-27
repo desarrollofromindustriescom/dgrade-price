@@ -1,6 +1,66 @@
 ---
 import { Font } from 'astro:assets';
+import Header from '@components/header.astro';
+import Footer from '@components/footer.astro';
+import Card from '@components/card.astro';
 import '@styles/global.css';
+
+import P01 from '@pictures/223f57b3-743c-46c0-9697-ebab98d6d1a0.avif';
+import P02 from '@pictures/69757de1-8281-4e9e-b621-0c812ad36565.avif';
+import P03 from '@pictures/b4f19f3f-dfd9-4d2a-a5eb-775d815bfbb0.avif';
+
+const data: {
+   images: ImageMetadata[];
+   cover: ImageMetadata;
+   title: string;
+   features: string[];
+   price: number;
+}[] = [
+   {
+      images: [P01],
+      cover: P01,
+      title: 'Página de presentación',
+      features: [
+         'Página estática',
+         'Diseño ajustado a todos los dispositivos',
+         'Contiene la información del contacto',
+         'Diseño y cambios a petición del cliente antes de la fecha de entrega',
+         'Sin cambios después de que la página esté en funcionamiento',
+      ],
+      price: 600,
+   },
+   {
+      images: [P02],
+      cover: P02,
+      title: 'Sección con productos',
+      features: [
+         'Incluye la Página de presentación',
+         'Inicio de sesión para usuarios',
+         'Agregar productos sin la ayuda de los desarrolladores',
+         'Agregar cualquier cantidad de productos',
+         'Asignar precios, nombres de productos, imágenes de referencias y características',
+         'Sección de productos con precios en la página de usuarios',
+         'Formulario de contacto',
+      ],
+      price: 2800,
+   },
+   {
+      images: [P03],
+      cover: P03,
+      title: 'Compra de productos',
+      features: [
+         'Incluye la Sección con productos',
+         'Agregar pasarela de pago en línea',
+         'Pagos con tarjetas Mastercard, visa y American expréss',
+         'Asignar stock disponible',
+         'Sección de ordenes',
+         'Carrito de compras',
+         'Seguimiento de orden para cliente',
+         'Etapas de despacho de productos',
+      ],
+      price: 5900,
+   },
+];
 ---
 
 <html lang="en">
@@ -26,5 +86,19 @@ import '@styles/global.css';
       />
       <title>DGrade Cotización</title>
    </head>
-   <body></body>
+   <body class="flex flex-col items-start justify-start w-full min-h-dvh">
+      <Header />
+      <main class="w-full flex-auto bg-main grid grid-cols-3 gap-10 p-10">
+         {data.map(({ cover, features, images, price, title }) => (
+            <Card
+               cover={cover}
+               features={features}
+               images={images}
+               price={price}
+               title={title}
+            />
+         ))}
+      </main>
+      <Footer />
+   </body>
 </html>

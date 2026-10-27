@@ -1,0 +1,31 @@
+---
+interface Props {
+   value: number;
+}
+
+const { value } = Astro.props;
+---
+
+<span
+   class="price-format"
+   data-price={value}
+>
+   {value}
+</span>
+
+<script>
+   const locale: string = 'es-MX';
+   const currency: string = 'MXN';
+
+   document.addEventListener('DOMContentLoaded', () => {
+      const formats: HTMLSpanElement[] = [...document.querySelectorAll<HTMLSpanElement>('.price-format')];
+
+      for (let i: number = 0; i < formats.length; i++) {
+         const value: number = Number(formats[i].dataset.price);
+
+         if (Number.isNaN(value)) continue;
+
+         formats[i].textContent = new Intl.NumberFormat(locale, { currency, style: 'currency' }).format(value);
+      }
+   });
+</script>
