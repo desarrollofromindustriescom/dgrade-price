@@ -1,6 +1,4 @@
 ---
-import { Image } from 'astro:assets';
-
 interface Props {
    id: string;
    images: ImageMetadata[];
@@ -47,8 +45,8 @@ const arrowButton =
       >
          {images.map((image, i) => (
             <div class="h-full w-full shrink-0">
-               <Image
-                  src={image}
+               <img
+                  src={image.src}
                   alt={`${alt} ${i + 1}`}
                   class="h-full w-full object-contain"
                />
