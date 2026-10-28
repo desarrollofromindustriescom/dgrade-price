@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import Price from '@components/price.astro';
+import Slider from '@components/slider.astro';
 
 interface Props {
    images: ImageMetadata[];
@@ -11,17 +12,26 @@ interface Props {
 }
 
 const { images, cover, title, features, price } = Astro.props;
+
+const sliderId: string = `slider-${crypto.randomUUID()}`;
 ---
 
 <article
    class="flex flex-col gap-4 rounded-2xl bg-white p-4 shadow-md transition duration-300 hover:-translate-y-3 hover:shadow-2xl hover:scale-[101%]"
    data-images={JSON.stringify(images.map((image) => image.src))}
 >
-   <Image
-      src={cover}
-      alt={title}
-      class="aspect-4/3 w-full rounded-lg object-cover shadow-md"
-   />
+   <button
+      type="button"
+      data-slider-open={sliderId}
+      aria-label={`Ver imágenes de ${title}`}
+      class="w-full cursor-zoom-in"
+   >
+      <img
+         src={cover.src}
+         alt={title}
+         class="aspect-4/3 w-full rounded-lg object-cover shadow-xl"
+      />
+   </button>
    <h2 class="text-xl sm:text-2xl transition-all font-bold text-custom-black">{title}</h2>
    <div class="w-full flex flex-col">
       {features.map((feature) => (
@@ -40,3 +50,10 @@ const { images, cover, title, features, price } = Astro.props;
       <Price value={price} />
    </div>
 </article>
+
+<!-- Fuera del article: su transform (hover) volvería relativo al card al `fixed` del modal -->
+<Slider
+   id={sliderId}
+   images={images}
+   alt={title}
+/>
