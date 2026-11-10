@@ -3,10 +3,17 @@ import { Image } from 'astro:assets';
 import logo from '@icons/logo.svg';
 ---
 
-<header class="flex h-16 w-full items-center justify-center bg-white shadow-md">
-   <Image
-      src={logo}
-      alt="DGrade"
-      class="h-12 w-auto"
-   />
+<header class="flex flex-col w-full items-center justify-center shadow-md">
+   <div class="w-full flex items-center justify-center bg-white py-3">
+      <Image
+         src={logo}
+         alt="DGrade"
+         class="h-12 w-auto"
+      />
+   </div>
+   <div class="bg-custom-black w-full flex items-center justify-center py-1.5 px-3">
+      <p class="text-contrast text-sm font-bold">
+         Precios de referencia sujetos a cambios dependiendo de las necesidades del proyecto
+      </p>
+   </div>
 </header>
