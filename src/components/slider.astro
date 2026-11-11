@@ -64,6 +64,10 @@ import XIcon from '@icons/x.svg';
 <script>
    import { slider } from '@scripts/slider';
 
+   /**
+    * Cleanup after a slide animation ends: removes the transition classes and this listener from the
+    * image, and unlocks navigation (onTransition = false) so the buttons and dots respond again.
+    */
    const handleRemoveTransition = (event: Event) => {
       const img = event.currentTarget as HTMLImageElement;
 
@@ -73,6 +77,10 @@ import XIcon from '@icons/x.svg';
       onTransition = false;
    };
 
+   /**
+    * Runs when the outgoing image finishes sliding off to the right during a wrap-around (first -> last).
+    * After the normal cleanup it parks the image off-screen on the left (-50%), ready for the next cycle.
+    */
    const handleSetLeft = (event: Event) => {
       handleRemoveTransition(event);
 
@@ -82,6 +90,10 @@ import XIcon from '@icons/x.svg';
       img.style.left = '-50%';
    };
 
+   /**
+    * Runs when the outgoing image finishes sliding off to the left during a wrap-around (last -> first).
+    * After the normal cleanup it parks the image off-screen on the right (150%), ready for the next cycle.
+    */
    const handleSetRight = (event: Event) => {
       handleRemoveTransition(event);
 
@@ -91,6 +103,12 @@ import XIcon from '@icons/x.svg';
       img.style.left = '150%';
    };
 
+   /**
+    * Core animation logic: moves from the current slide (slider.index) to `next`, updates slider.index and
+    * locks navigation while animating. With `continuous` (prev/next buttons) it handles the looping
+    * transitions between first and last images; without it (dots) it jumps directly to any slide,
+    * pre-positioning the skipped images off-screen so they don't appear during the slide.
+    */
    const handleGoToSlide = (next: number, continuous: boolean) => {
       const pictures: HTMLImageElement[] = [...picturesWrapper.querySelectorAll<HTMLImageElement>('img')];
       const prev: number = slider.index;
@@ -98,6 +116,10 @@ import XIcon from '@icons/x.svg';
       slider.index = next;
       onTransition = true;
 
+      /**
+       * Shared setup for every transition: enables the CSS transition on both the outgoing and incoming
+       * images, registers the cleanup listener on the incoming one and slides it to the center (50%).
+       */
       const commonSetup = () => {
          pictures[prev].classList.add('transition-all', 'duration-400');
          pictures[next].classList.add('transition-all', 'duration-400');
@@ -109,6 +131,10 @@ import XIcon from '@icons/x.svg';
       if (continuous) {
          if (next > prev) {
             if (prev === 0 && next === slider.length - 1) {
+               /**
+                * Second phase of the first -> last wrap-around: once the incoming (last) image has been
+                * instantly repositioned (1ms transition), runs the real animation moving the old image right.
+                */
                const handle = (event: Event) => {
                   (event.currentTarget as HTMLImageElement).removeEventListener('transitionend', handle);
                   (event.currentTarget as HTMLImageElement).classList.remove('duration-1');
@@ -139,6 +165,10 @@ import XIcon from '@icons/x.svg';
          }
 
          if (prev === slider.length - 1 && next === 0) {
+            /**
+             * Second phase of the last -> first wrap-around: once the incoming (first) image has been
+             * instantly repositioned (1ms transition), runs the real animation moving the old image left.
+             */
             const handle = (event: Event) => {
                (event.currentTarget as HTMLImageElement).removeEventListener('transitionend', handle);
                (event.currentTarget as HTMLImageElement).classList.remove('duration-1');
@@ -191,6 +221,10 @@ import XIcon from '@icons/x.svg';
       pictures[prev].style.left = '150%';
    };
 
+   /**
+    * Limits every image's max width to a 4:3 ratio of the wrapper's current height, so images keep their
+    * proportions and never overflow horizontally. Called when drawing pictures and on window resize.
+    */
    const handleSetMaxWidth = () => {
       const rect: DOMRect = picturesWrapper.getBoundingClientRect();
       const pictures: HTMLImageElement[] = [...picturesWrapper.querySelectorAll('img')];
@@ -200,6 +234,10 @@ import XIcon from '@icons/x.svg';
       }
    };
 
+   /**
+    * Updates the pagination dots' styles: the previous dot returns to the small inactive style and the
+    * new one becomes the wide highlighted dot, giving visual feedback of the current slide.
+    */
    const setSelectedDot = (prev: number, next: number) => {
       const current: HTMLButtonElement | null = indexWrapper.querySelector<HTMLButtonElement>(`#slider-dot-${prev}`);
       const selected: HTMLButtonElement | null = indexWrapper.querySelector<HTMLButtonElement>(`#slider-dot-${next}`);
@@ -209,6 +247,10 @@ import XIcon from '@icons/x.svg';
       if (selected) selected.className = `h-3 cursor-pointer rounded-full transition-all w-8 bg-main`;
    };
 
+   /**
+    * Click handler for the pagination dots: reads the dot's index from its data attribute and jumps
+    * directly to that slide (non-continuous). Ignored while an animation is running.
+    */
    const handleChangeDot = (event: Event) => {
       if (onTransition) return;
 
@@ -224,6 +266,10 @@ import XIcon from '@icons/x.svg';
       handleGoToSlide(next, false);
    };
 
+   /**
+    * Renders one pagination dot button per picture inside the footer wrapper (replacing any previous
+    * dots) and attaches the click handler. The dot matching slider.index is drawn as selected.
+    */
    const drawIndex = (length: number) => {
       indexWrapper.innerHTML = '';
 
@@ -240,6 +286,10 @@ import XIcon from '@icons/x.svg';
       }
    };
 
+   /**
+    * Renders the <img> elements of the chosen gallery inside the pictures wrapper (replacing any previous
+    * ones). The current slide is centered (left: 50%), the rest are parked off-screen (left: 150%).
+    */
    const drawPictures = (pictures: ImageMetadata[]) => {
       picturesWrapper.innerHTML = '';
 
@@ -259,6 +309,10 @@ import XIcon from '@icons/x.svg';
       handleSetMaxWidth();
    };
 
+   /**
+    * Exposed as slider.open: opens the slider for the gallery at `index` (ignored if out of range). Resets
+    * the state to the first slide, shows the overlay, draws dots and pictures and locks the page scroll.
+    */
    const handleOpen = (index: number) => {
       console.log(`Opening slider at index ${index}, ${slider.pictures.length}`);
       if (index > slider.pictures.length - 1) return;
@@ -276,6 +330,9 @@ import XIcon from '@icons/x.svg';
       document.body.classList.add('overflow-hidden');
    };
 
+   /**
+    * Exposed as slider.close: hides the overlay, marks the slider as not visible and restores page scroll.
+    */
    const handleClose = () => {
       slider.visible = false;
 
@@ -285,6 +342,10 @@ import XIcon from '@icons/x.svg';
       document.body.classList.remove('overflow-hidden');
    };
 
+   /**
+    * Exposed as slider.prev: goes to the previous slide, looping to the last one from the first, and
+    * updates the selected dot before running the continuous animation.
+    */
    const handlePrev = () => {
       let index: number = slider.index - 1;
 
@@ -294,6 +355,10 @@ import XIcon from '@icons/x.svg';
       handleGoToSlide(index, true);
    };
 
+   /**
+    * Exposed as slider.next: goes to the next slide, looping to the first one from the last, and
+    * updates the selected dot before running the continuous animation.
+    */
    const handleNext = () => {
       let index: number = slider.index + 1;
 
@@ -313,6 +378,10 @@ import XIcon from '@icons/x.svg';
    let onTransition: boolean = false;
 
    window.addEventListener('resize', handleSetMaxWidth);
+   /**
+    * Initialization once the DOM is ready: looks up the slider elements (aborting if any is missing),
+    * wires slider.open/close/prev/next to their handlers and binds the button click events.
+    */
    document.addEventListener('DOMContentLoaded', () => {
       let components: (HTMLElement | null)[] = [
          document.querySelector<HTMLDivElement>('#slider'),
