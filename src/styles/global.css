@@ -7,6 +7,40 @@
    --color-contrast: #4dcaff;
 }
 
+@utility slider-button {
+   @apply flex size-12 md:size-10 cursor-pointer items-center justify-center rounded-full bg-white transition-all;
+
+   img {
+      @apply size-8 md:size-6 transition-all;
+   }
+
+   &:is(:hover, :focus) {
+      @apply bg-slate-300;
+      
+      img {
+         @apply scale-110;
+      }
+   }
+}
+
 * {
    font-family: var(--custom-font-roboto), sans-serif;
+}
+
+div#slider {
+   transition:
+      opacity 0.3s ease,
+      display 0.3s allow-discrete;
+      
+   &.hidden {
+      opacity: 0;
+   }
+
+   &:not(.hidden) {
+      opacity: 1;
+
+      @starting-style {
+         opacity: 0;
+      }
+   }
 }

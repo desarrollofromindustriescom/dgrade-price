@@ -1,29 +1,22 @@
 ---
 import Price from '@components/price.astro';
-import Slider from '@components/slider.astro';
 
 interface Props {
-   images: ImageMetadata[];
+   index: number;
    cover: ImageMetadata;
    title: string;
    features: string[];
    price: number;
 }
 
-const { images, cover, title, features, price } = Astro.props;
-
-const sliderId: string = `slider-${crypto.randomUUID()}`;
+const { index, cover, title, features, price } = Astro.props;
 ---
 
-<article
-   class="flex flex-col gap-4 rounded-2xl bg-white p-4 shadow-md transition duration-300 hover:-translate-y-3 hover:shadow-2xl hover:scale-[101%]"
-   data-images={JSON.stringify(images.map((image) => image.src))}
->
+<article class="flex flex-col gap-4 rounded-2xl bg-white p-4 shadow-md transition duration-300 hover:-translate-y-3 hover:shadow-2xl hover:scale-[101%]">
    <button
       type="button"
-      data-slider-open={sliderId}
-      aria-label={`Ver imágenes de ${title}`}
-      class="w-full cursor-zoom-in"
+      class="slider-handler w-full cursor-zoom-in"
+      data-index={index}
    >
       <img
          src={cover.src}
@@ -32,6 +25,7 @@ const sliderId: string = `slider-${crypto.randomUUID()}`;
       />
    </button>
    <h2 class="text-xl sm:text-2xl transition-all font-bold text-custom-black">{title}</h2>
+
    <div class="w-full flex flex-col">
       {features.map((feature) => (
          <div class="flex flex-row items-start justify-start">
@@ -40,19 +34,23 @@ const sliderId: string = `slider-${crypto.randomUUID()}`;
          </div>
       ))}
    </div>
-   <!-- <ul class="flex list-inside list-disc flex-col gap-0.5">
-      {features.map((feature) => (
-         <li class="text-sm">{feature}</li>
-      ))}
-   </ul> -->
+
    <div class="mt-auto w-full flex [&_span]:ml-auto [&_span]:text-2xl [&_span]:sm:text-3xl [&_span]:italic [&_span]:text-main [&_span]:font-semibold [&_span]:transition-all">
       <Price value={price} />
    </div>
 </article>
 
-<!-- Fuera del article: su transform (hover) volvería relativo al card al `fixed` del modal -->
-<Slider
-   id={sliderId}
-   images={images}
-   alt={title}
-/>
+<script>
+   import { slider } from '@scripts/slider';
+
+   document.addEventListener('DOMContentLoaded', () => {
+      if (slider.handlers.length > 0) return;
+
+      slider.handlers = [...document.querySelectorAll<HTMLButtonElement>('.slider-handler')];
+
+      for (let i = 0; i < slider.handlers.length; i++) {
+         const index: number = Number(slider.handlers[i].dataset.index || '0');
+         slider.handlers[i].addEventListener('click', () => slider.open(index));
+      }
+   });
+</script>

@@ -1,176 +1,350 @@
 ---
-interface Props {
-   id: string;
-   images: ImageMetadata[];
-   alt: string;
-}
-
-const { id, images, alt } = Astro.props;
-
-const arrowButton =
-   'flex size-12 items-center justify-center rounded-full bg-white text-custom-black transition-all enabled:cursor-pointer enabled:hover:bg-main enabled:hover:text-white disabled:cursor-not-allowed disabled:opacity-30';
+import { Image } from 'astro:assets';
+import ChevronRightIcon from '@icons/chevron-right.svg';
+import ChevronLeftIcon from '@icons/chevron-left.svg';
+import XIcon from '@icons/x.svg';
 ---
 
 <div
-   id={id}
-   data-slider
-   role="dialog"
-   aria-modal="true"
-   aria-label={alt}
-   class="fixed inset-0 z-100 hidden grid-cols-2 grid-rows-[1fr_auto_auto] gap-4 bg-custom-black/95 p-4 pt-20 pb-6 data-open:grid sm:grid-cols-[auto_1fr_auto] sm:grid-rows-[1fr_auto]"
+   id="slider"
+   class="fixed inset-0 size-full z-100 gap-1 md:gap-4 p-2 md:p-6 hidden grid-cols-[auto_1fr_1fr_auto] md:grid-cols-[auto_1fr_auto] grid-rows-[auto_1fr_0.5fr_auto] md:grid-rows-[auto_1fr_auto] bg-custom-black/95 items-center justify-items-center"
 >
+   <!-- Header -->
    <button
+      id="close-slider"
       type="button"
-      data-slider-close
-      aria-label="Cerrar"
-      class="absolute top-4 right-4 flex size-12 cursor-pointer items-center justify-center rounded-full bg-white text-custom-black transition-all hover:bg-main hover:text-white"
+      class="slider-button col-4 md:col-3 row-1"
    >
-      <svg
-         xmlns="http://www.w3.org/2000/svg"
-         viewBox="0 0 24 24"
-         fill="none"
-         stroke="currentColor"
-         stroke-width="2"
-         stroke-linecap="round"
-         class="size-6"
-      >
-         <path d="M6 6l12 12M18 6L6 18"></path>
-      </svg>
+      <Image
+         src={XIcon}
+         alt="close"
+      />
    </button>
 
-   <div class="col-span-2 row-start-1 min-h-0 overflow-hidden sm:col-span-1 sm:col-start-2">
-      <div
-         data-slider-track
-         class="flex h-full transition-transform duration-500 ease-in-out"
-      >
-         {images.map((image, i) => (
-            <div class="h-full w-full shrink-0">
-               <img
-                  src={image.src}
-                  alt={`${alt} ${i + 1}`}
-                  class="h-full w-full object-contain"
-               />
-            </div>
-         ))}
-      </div>
+   <!-- Main -->
+   <button
+      id="prev-slider"
+      type="button"
+      class="slider-button col-start-1 col-span-2 md:col-span-1 row-3 md:row-2"
+   >
+      <Image
+         src={ChevronLeftIcon}
+         alt="previous"
+      />
+   </button>
+
+   <div
+      id="slider-pictures-wrapper"
+      class="size-full overflow-hidden relative col-start-1 col-span-4 md:col-start-2 md:col-span-1 row-2"
+   >
+      <!-- Pictures will be dynamically inserted here -->
    </div>
 
    <button
+      id="next-slider"
       type="button"
-      data-slider-prev
-      aria-label="Anterior"
-      class:list={[arrowButton, 'col-start-1 row-start-2 justify-self-center self-center sm:row-start-1']}
+      class="slider-button col-start-3 col-span-2 md:col-start-3 md:col-span-1 row-3 md:row-2"
    >
-      <svg
-         xmlns="http://www.w3.org/2000/svg"
-         viewBox="0 0 24 24"
-         fill="none"
-         stroke="currentColor"
-         stroke-width="2"
-         stroke-linecap="round"
-         stroke-linejoin="round"
-         class="size-6"
-      >
-         <path d="M15 5l-7 7 7 7"></path>
-      </svg>
+      <Image
+         src={ChevronRightIcon}
+         alt="next"
+      />
    </button>
 
-   <button
-      type="button"
-      data-slider-next
-      aria-label="Siguiente"
-      class:list={[
-         arrowButton,
-         'col-start-2 row-start-2 justify-self-center self-center sm:col-start-3 sm:row-start-1',
-      ]}
-   >
-      <svg
-         xmlns="http://www.w3.org/2000/svg"
-         viewBox="0 0 24 24"
-         fill="none"
-         stroke="currentColor"
-         stroke-width="2"
-         stroke-linecap="round"
-         stroke-linejoin="round"
-         class="size-6"
-      >
-         <path d="M9 5l7 7-7 7"></path>
-      </svg>
-   </button>
+   <!-- Footer -->
 
-   <div class="col-span-2 row-start-3 flex items-center justify-center gap-2 sm:col-span-3 sm:col-start-1 sm:row-start-2">
-      {images.map((_, i) => (
-         <button
-            type="button"
-            data-slider-dot={i}
-            aria-label={`Ir a la imagen ${i + 1}`}
-            class="h-3 w-3 cursor-pointer rounded-full bg-white/40 transition-all hover:bg-white/70 data-active:w-8 data-active:bg-main"
-         />
-      ))}
+   <div
+      id="slider-index-wrapper"
+      class="col-start-1 col-span-4 md:col-span-3 row-4 md:row-3 flex items-center justify-center gap-2 w-full"
+   >
+      <!-- Index dots will be dynamically inserted here -->
    </div>
 </div>
 
 <script>
-   const getOpenSlider = (): HTMLElement | null => document.querySelector<HTMLElement>('[data-slider][data-open]');
+   import { slider } from '@scripts/slider';
 
-   const goTo = (slider: HTMLElement, target: number): void => {
-      const track = slider.querySelector<HTMLElement>('[data-slider-track]')!;
-      const dots = [...slider.querySelectorAll<HTMLElement>('[data-slider-dot]')];
-      const last: number = dots.length - 1;
-      const index: number = Math.min(Math.max(target, 0), last);
+   const handleRemoveTransition = (event: Event) => {
+      const img = event.currentTarget as HTMLImageElement;
 
-      slider.dataset.index = String(index);
-      track.style.transform = `translateX(-${index * 100}%)`;
+      img.classList.remove('transition-all', 'duration-400');
+      img.removeEventListener('transitionend', handleRemoveTransition);
 
-      dots.forEach((dot, i) => dot.toggleAttribute('data-active', i === index));
-
-      slider.querySelector<HTMLButtonElement>('[data-slider-prev]')!.disabled = index === 0;
-      slider.querySelector<HTMLButtonElement>('[data-slider-next]')!.disabled = index === last;
+      onTransition = false;
    };
 
-   const open = (slider: HTMLElement): void => {
-      slider.setAttribute('data-open', '');
-      document.body.classList.add('overflow-hidden');
-      goTo(slider, 0);
+   const handleSetLeft = (event: Event) => {
+      handleRemoveTransition(event);
+
+      const img = event.currentTarget as HTMLImageElement;
+
+      img.removeEventListener('transitionend', handleSetLeft);
+      img.style.left = '-50%';
    };
 
-   const close = (slider: HTMLElement): void => {
-      slider.removeAttribute('data-open');
-      document.body.classList.remove('overflow-hidden');
+   const handleSetRight = (event: Event) => {
+      handleRemoveTransition(event);
+
+      const img = event.currentTarget as HTMLImageElement;
+
+      img.removeEventListener('transitionend', handleSetRight);
+      img.style.left = '150%';
    };
 
-   document.addEventListener('click', (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
+   const handleGoToSlide = (next: number, continuous: boolean) => {
+      const pictures: HTMLImageElement[] = [...picturesWrapper.querySelectorAll<HTMLImageElement>('img')];
+      const prev: number = slider.index;
 
-      const trigger = target.closest<HTMLElement>('[data-slider-open]');
-      if (trigger) {
-         const slider = document.getElementById(trigger.dataset.sliderOpen!);
-         if (slider) open(slider);
+      slider.index = next;
+      onTransition = true;
+
+      const commonSetup = () => {
+         pictures[prev].classList.add('transition-all', 'duration-400');
+         pictures[next].classList.add('transition-all', 'duration-400');
+
+         pictures[next].addEventListener('transitionend', handleRemoveTransition);
+         pictures[next].style.left = '50%';
+      };
+
+      if (continuous) {
+         if (next > prev) {
+            if (prev === 0 && next === slider.length - 1) {
+               const handle = (event: Event) => {
+                  (event.currentTarget as HTMLImageElement).removeEventListener('transitionend', handle);
+                  (event.currentTarget as HTMLImageElement).classList.remove('duration-1');
+
+                  commonSetup();
+
+                  pictures[prev].addEventListener('transitionend', handleSetLeft);
+                  pictures[prev].style.left = '150%';
+               };
+
+               pictures[next].addEventListener('transitionend', handle);
+               pictures[next].classList.add('transition-all', 'duration-1');
+
+               for (let i: number = 0; i < pictures.length; i++) {
+                  if (i === prev) continue;
+                  pictures[i].style.left = '-50%';
+               }
+
+               return;
+            }
+
+            commonSetup();
+
+            pictures[prev].addEventListener('transitionend', handleRemoveTransition);
+            pictures[prev].style.left = '-50%';
+
+            return;
+         }
+
+         if (prev === slider.length - 1 && next === 0) {
+            const handle = (event: Event) => {
+               (event.currentTarget as HTMLImageElement).removeEventListener('transitionend', handle);
+               (event.currentTarget as HTMLImageElement).classList.remove('duration-1');
+
+               commonSetup();
+
+               pictures[prev].addEventListener('transitionend', handleSetRight);
+               pictures[prev].style.left = '-50%';
+            };
+
+            pictures[next].addEventListener('transitionend', handle);
+            pictures[next].classList.add('transition-all', 'duration-1');
+
+            for (let i: number = 0; i < pictures.length; i++) {
+               if (i === prev) continue;
+               pictures[i].style.left = '150%';
+            }
+
+            return;
+         }
+
+         commonSetup();
+
+         pictures[prev].addEventListener('transitionend', handleRemoveTransition);
+         pictures[prev].style.left = '150%';
+
          return;
       }
 
-      const slider = target.closest<HTMLElement>('[data-slider]');
-      if (!slider) return;
+      if (next > prev) {
+         for (let i: number = prev + 1; i < next; i++) {
+            pictures[i].style.left = '-50%';
+         }
 
-      const index: number = Number(slider.dataset.index);
+         commonSetup();
 
-      if (target.closest('[data-slider-close]')) close(slider);
-      else if (target.closest('[data-slider-prev]')) goTo(slider, index - 1);
-      else if (target.closest('[data-slider-next]')) goTo(slider, index + 1);
-      else {
-         const dot = target.closest<HTMLElement>('[data-slider-dot]');
-         if (dot) goTo(slider, Number(dot.dataset.sliderDot));
+         pictures[prev].addEventListener('transitionend', handleRemoveTransition);
+         pictures[prev].style.left = '-50%';
+
+         return;
       }
-   });
 
-   document.addEventListener('keydown', (event: KeyboardEvent) => {
-      const slider = getOpenSlider();
-      if (!slider) return;
+      for (let i: number = prev - 1; i > next; i--) {
+         pictures[i].style.left = '150%';
+      }
 
-      const index: number = Number(slider.dataset.index);
+      commonSetup();
 
-      if (event.key === 'Escape') close(slider);
-      else if (event.key === 'ArrowLeft') goTo(slider, index - 1);
-      else if (event.key === 'ArrowRight') goTo(slider, index + 1);
+      pictures[prev].addEventListener('transitionend', handleRemoveTransition);
+      pictures[prev].style.left = '150%';
+   };
+
+   const handleSetMaxWidth = () => {
+      const rect: DOMRect = picturesWrapper.getBoundingClientRect();
+      const pictures: HTMLImageElement[] = [...picturesWrapper.querySelectorAll('img')];
+
+      for (let i: number = 0; i < pictures.length; i++) {
+         pictures[i].style.maxWidth = `${(rect.height / 3) * 4}px`;
+      }
+   };
+
+   const setSelectedDot = (prev: number, next: number) => {
+      const current: HTMLButtonElement | null = indexWrapper.querySelector<HTMLButtonElement>(`#slider-dot-${prev}`);
+      const selected: HTMLButtonElement | null = indexWrapper.querySelector<HTMLButtonElement>(`#slider-dot-${next}`);
+
+      if (current)
+         current.className = `h-3 cursor-pointer rounded-full transition-all w-3 bg-white/40 hover:bg-white/90 focus:bg-white/90`;
+      if (selected) selected.className = `h-3 cursor-pointer rounded-full transition-all w-8 bg-main`;
+   };
+
+   const handleChangeDot = (event: Event) => {
+      if (onTransition) return;
+
+      const target = event.target as HTMLElement;
+      const index: number = Number(target.dataset.sliderDot);
+
+      if (isNaN(index)) return;
+
+      const prev: number = slider.index;
+      const next: number = index;
+
+      setSelectedDot(prev, next);
+      handleGoToSlide(next, false);
+   };
+
+   const drawIndex = (length: number) => {
+      indexWrapper.innerHTML = '';
+
+      for (let i: number = 0; i < length; i++) {
+         const dot = document.createElement('button');
+
+         dot.type = 'button';
+         dot.id = `slider-dot-${i}`;
+         dot.className = `h-3 cursor-pointer rounded-full transition-all ${i === slider.index ? 'w-8 bg-main' : 'w-3 bg-white/40 hover:bg-white/90 focus:bg-white/90'}`;
+         dot.setAttribute('data-slider-dot', String(i));
+         dot.addEventListener('click', handleChangeDot);
+
+         indexWrapper.appendChild(dot);
+      }
+   };
+
+   const drawPictures = (pictures: ImageMetadata[]) => {
+      picturesWrapper.innerHTML = '';
+
+      for (let i: number = 0; i < pictures.length; i++) {
+         const picture: HTMLImageElement = document.createElement('img');
+
+         picture.id = `slider-picture-${i}`;
+         picture.src = pictures[i].src;
+         picture.alt = `Imagen ${i + 1}`;
+         picture.className = `w-[98%] aspect-[4/3] object-fit rounded-lg absolute top-1/2 -translate-x-1/2 -translate-y-1/2 max-h-[98%]`;
+         picture.setAttribute('data-slider-picture', String(i));
+         picture.style.left = slider.index === i ? '50%' : '150%';
+
+         picturesWrapper.appendChild(picture);
+      }
+
+      handleSetMaxWidth();
+   };
+
+   const handleOpen = (index: number) => {
+      console.log(`Opening slider at index ${index}, ${slider.pictures.length}`);
+      if (index > slider.pictures.length - 1) return;
+
+      slider.visible = true;
+      slider.index = 0;
+      slider.length = slider.pictures[index].length;
+
+      wrapper.classList.remove('hidden');
+      wrapper.classList.add('grid');
+
+      drawIndex(slider.pictures[index].length);
+      drawPictures(slider.pictures[index]);
+
+      document.body.classList.add('overflow-hidden');
+   };
+
+   const handleClose = () => {
+      slider.visible = false;
+
+      wrapper.classList.remove('grid');
+      wrapper.classList.add('hidden');
+
+      document.body.classList.remove('overflow-hidden');
+   };
+
+   const handlePrev = () => {
+      let index: number = slider.index - 1;
+
+      if (index < 0) index = slider.length - 1;
+
+      setSelectedDot(slider.index, index);
+      handleGoToSlide(index, true);
+   };
+
+   const handleNext = () => {
+      let index: number = slider.index + 1;
+
+      if (index === slider.length) index = 0;
+
+      setSelectedDot(slider.index, index);
+      handleGoToSlide(index, true);
+   };
+
+   let wrapper: HTMLDivElement = document.createElement('div');
+   let closeButton: HTMLButtonElement = document.createElement('button');
+   let prevButton: HTMLButtonElement = document.createElement('button');
+   let nextButton: HTMLButtonElement = document.createElement('button');
+   let picturesWrapper: HTMLDivElement = document.createElement('div');
+   let indexWrapper: HTMLDivElement = document.createElement('div');
+
+   let onTransition: boolean = false;
+
+   window.addEventListener('resize', handleSetMaxWidth);
+   document.addEventListener('DOMContentLoaded', () => {
+      let components: (HTMLElement | null)[] = [
+         document.querySelector<HTMLDivElement>('#slider'),
+         document.querySelector<HTMLButtonElement>('#slider #close-slider'),
+         document.querySelector<HTMLButtonElement>('#slider #prev-slider'),
+         document.querySelector<HTMLButtonElement>('#slider #next-slider'),
+         document.querySelector<HTMLDivElement>('#slider #slider-pictures-wrapper'),
+         document.querySelector<HTMLDivElement>('#slider #slider-index-wrapper'),
+      ];
+
+      for (let i: number = 0; i < components.length; i++) {
+         if (!components[i]) return;
+      }
+
+      wrapper = components[0] as HTMLDivElement;
+      closeButton = components[1] as HTMLButtonElement;
+      prevButton = components[2] as HTMLButtonElement;
+      nextButton = components[3] as HTMLButtonElement;
+      picturesWrapper = components[4] as HTMLDivElement;
+      indexWrapper = components[5] as HTMLDivElement;
+
+      slider.open = handleOpen;
+      slider.close = handleClose;
+      slider.prev = handlePrev;
+      slider.next = handleNext;
+
+      closeButton.addEventListener('click', () => slider.close());
+      prevButton.addEventListener('click', () => {
+         if (!onTransition) slider.prev();
+      });
+      nextButton.addEventListener('click', () => {
+         if (!onTransition) slider.next();
+      });
    });
 </script>
